@@ -58,7 +58,6 @@ const App = () => {
     axios
         .get('http://localhost:3001/persons')
         .then(personsData => {
-          console.log(personsData.data)
           setPersons(personsData.data)
         })
   }, [])
@@ -69,15 +68,23 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNum,
-      id: String(persons.length+1)
+    }
+
+    const Success = () => {
+      axios
+          .post('http://localhost:3001/persons', personObject)
+          .then(response => {
+            setPersons(persons.concat(response.data))
+            setNewName('')
+            setNewNum('')
+          })
     }
 
     persons.some(person => person.name.toLowerCase() === newName.toLowerCase() || person.number === newNum) /* some runs test against each element */
       ? alert(`The name ${newName} or number ${newNum} is already added to phonebook`)
-      : setPersons(persons.concat(personObject))
+      : Success()
 
-    setNewName('')
-    setNewNum('')
+
   }
 
   const handleNameChange = (event) => {
