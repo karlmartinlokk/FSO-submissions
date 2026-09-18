@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 const Search = (props) => {
   return (
@@ -36,38 +37,42 @@ const AddNewPerson = ({addInfo, newName, handleNameChange, newNum, handleNumChan
   )
 }
 
-const Person = ({name, num}) => <p>{name} {num}</p>
+const Person = ({name, number}) => <p>{name} {number}</p>
 
 const Numbers = ({filteredPersons}) => {
   return (
-    filteredPersons.map(person => <Person key={person.id} name={person.name} num={person.num}></Person>)
+    filteredPersons.map(person => <Person key={person.id} name={person.name} number={person.number}></Person>)
   )
 }
 
 
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', num: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', num: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', num: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', num: '39-23-6423122', id: 4 }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNum, setNewNum] = useState('')
   const [searchBar, setSearchBar] = useState('')
 
+
+  useEffect(() => {
+    axios
+        .get('http://localhost:3001/persons')
+        .then(personsData => {
+          console.log(personsData.data)
+          setPersons(personsData.data)
+        })
+  }, [])
 
 
   const addInfo = (event) => {
     event.preventDefault()
     const personObject = {
       name: newName,
-      num: newNum,
-      id: persons.length+1
+      number: newNum,
+      id: String(persons.length+1)
     }
 
-    persons.some(person => person.name.toLowerCase() === newName.toLowerCase() || person.num === newNum) /* some runs test against each element */
+    persons.some(person => person.name.toLowerCase() === newName.toLowerCase() || person.number === newNum) /* some runs test against each element */
       ? alert(`The name ${newName} or number ${newNum} is already added to phonebook`)
       : setPersons(persons.concat(personObject))
 
