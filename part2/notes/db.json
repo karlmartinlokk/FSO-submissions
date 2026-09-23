@@ -34,6 +34,21 @@
       "content": "important message",
       "important": true,
       "id": "B0zOH9-5AGs"
+    },
+    {
+      "content": "important message",
+      "important": false,
+      "id": "1LGrvfAQzdI"
+    },
+    {
+      "content": "hi im tinu",
+      "important": true,
+      "id": "KzCQTeE7cQg"
+    },
+    {
+      "content": "Hi",
+      "important": false,
+      "id": "5K2LCdh57g8"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

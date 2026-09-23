@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import personsService from './services/persons'
+import Notification from './components/Notification'
+
 const Search = (props) => {
   return (
   <div>
@@ -30,7 +32,14 @@ const AddNewPerson = ({addInfo, newName, handleNameChange, newNum, handleNumChan
           />
         </div>
         <div>
-          <button type="submit">add</button>
+          <button type="submit" 
+            style={{
+              backgroundColor: 'whitesmoke',
+              border: 'none', borderRadius: '5px', 
+              padding: '10px',
+            }}>
+            Add
+            </button>
         </div>
       </form>
   )
@@ -50,7 +59,7 @@ const Numbers = ({filteredPersons, deletePerson}) => {
 }
 
 const Person = ({name, number, id, deletePerson}) =>
-  <p>{name} {number} <button onClick={() => deletePerson(id)}>delete</button></p> /* arrow func so delete doesnt get called on render */
+  <p>{name} {number} <button className='delButton' onClick={() => deletePerson(id)}><div>delete</div></button></p> /* arrow func so delete doesnt get called on render */
 
 
 
@@ -59,6 +68,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNum, setNewNum] = useState('')
   const [searchBar, setSearchBar] = useState('')
+  const [notifMessage, setNotifMessage] = useState('')
 
 
   useEffect(() => {
@@ -82,12 +92,26 @@ const App = () => {
       if (confirmation) {
           const currentPerson = persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
           const updatedPerson = { ...currentPerson, number: newNum}
+
           personsService
             .replacePerson(currentPerson.id, updatedPerson)
             .then(() => {
               setPersons(persons.map(person => person.id === currentPerson.id ? updatedPerson : person))
+              setNotifMessage(`Number of ${currentPerson.name} changed to ${newNum}`)
               setNewName('')
               setNewNum('')
+
+              setTimeout(() => {
+                setNotifMessage('')
+              }, 3000)
+            })
+            .catch(() => {
+              setNotifMessage(`Error. ${currentPerson.name} was already removed from the server.`)
+              setPersons(persons.filter(person => person.id !== currentPerson.id))
+
+              setTimeout(() => {
+                setNotifMessage('')
+              }, 3000)
             })
       }
     }
@@ -99,6 +123,11 @@ const App = () => {
             setPersons(persons.concat(response))
             setNewName('')
             setNewNum('')
+            setNotifMessage(`${personObject.name} added!`)
+            setTimeout(() => {
+              setNotifMessage('')
+            }, 3000)
+            
           })
     }
 
@@ -113,9 +142,13 @@ const App = () => {
     if (confrimation()) {
       personsService
         .delPerson(id)
-        .then(() =>
+        .then(() => {
           setPersons(persons.filter(person => person.id !== id))
-      )
+          setNotifMessage(`'${currentPerson.name}' deleted.`)
+          setTimeout(() => {
+            setNotifMessage('')
+          }, 3000)
+    })
     }
   }
 
@@ -137,6 +170,7 @@ const App = () => {
     <div>
 
       <h2>Phonebook</h2>
+      <Notification message={notifMessage}></Notification>
 
       <Search 
       searchBar={searchBar}
