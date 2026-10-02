@@ -1,0 +1,51 @@
+@keyframes fade-out {
+    0% {opacity: 1;}
+    83% {opacity: 1;}
+    100% {opacity: 0;}
+}
+
+.notif {
+    color: rgb(166, 166, 166);
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    position: fixed;
+    top: 3%;
+    right: 5%;
+    background: rgb(245, 245, 245);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: rgb(180, 180, 180) 0 5px 10px;
+
+    animation-name: fade-out;
+    animation-duration: 3s;
+    animation-fill-mode: forward; /*without this notif is still visible for a split second right as react removes it*/
+}
+
+h2 {
+    background-color: whitesmoke;
+    padding: 5px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+p {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-left: 5px;
+}
+
+input {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: aliceblue;
+    border: none;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.delButton {
+    background-color: red;
+    border-radius: 10px;
+    border-width: 1px;
+}
+
+.delButton div {
+    color: white;
+}
