@@ -127,7 +127,12 @@ const App = () => {
             setTimeout(() => {
               setNotifMessage('')
             }, 3000)
-            
+          })
+          .catch(error => {
+            setNotifMessage(error.response.data.error)
+            setTimeout(() => {
+                setNotifMessage('')
+            }, 3000)
           })
     }
 
