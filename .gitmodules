@@ -1,0 +1,9 @@
+[submodule "FSO-phonebook-backend"]
+	path = part3/FSO-phonebook-backend
+	url = https://github.com/karlmartinlokk/FSO-phonebook-backend
+[submodule "FSO-bloglist"]
+	path = part4/FSO-bloglist
+	url = https://github.com/karlmartinlokk/FSO-bloglist
+[submodule "FSO-bloglist-frontend"]
+	path = part5/FSO-bloglist-frontend
+	url = https://github.com/karlmartinlokk/FSO-bloglist-frontend
