@@ -54,9 +54,24 @@ describe('Blog app', () => {
 
       const blogDiv = page.locator('.blog').filter({ hasText: 'test title'})
 
-      await expect(blogDiv).toContainText('test title')
-      await expect(blogDiv).toContainText('test author')
-      await expect(blogDiv).toContainText('test url')
+      await expect(blogDiv.getByText('test title')).toBeVisible()
+      await expect(blogDiv.getByText('test author')).toBeVisible()
+      await expect(blogDiv.getByText('test url')).not.toBeVisible()
+      await expect(blogDiv.getByText('0')).not.toBeVisible()
+      await expect(blogDiv.getByText('Superuser')).not.toBeVisible()
+    })
+
+    test('a blog can be liked', async ({ page }) => {
+      await createBlog(page, 'test title', 'test author', 'test url')
+
+      const blogDiv = page.locator('.blog').filter({ hasText: 'test title'})
+      await blogDiv.getByRole('button', { name: 'view'}).click()
+
+      await expect(blogDiv.locator('.likeCount')).toHaveText('0')
+
+      await blogDiv.getByRole('button', { name: 'like' }).click() 
+
+      await expect(blogDiv.locator('.likeCount')).toHaveText('1')
     })
   })
 })
