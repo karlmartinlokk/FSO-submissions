@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-import loginWith from './helper'
+import { loginWith, createBlog } from './helper'
 
 describe('Blog app', () => {
   beforeEach(async ({ request, page }) => {
@@ -30,17 +30,33 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      loginWith(page, 'root', 'salainen')
+      await loginWith(page, 'root', 'salainen')
       const result = page.getByText('Logged in as Superuser')
 
       await expect(result).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-      loginWith(page, 'wrongname', 'wrongpassword')
+      await loginWith(page, 'wrongname', 'wrongpassword')
       const notifDiv = page.locator('.notification') //locate element with CSS className 'notification'
 
       await expect(notifDiv).toContainText('Error, wrong credentials')
+    })
+  })
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'root', 'salainen')
+    })
+
+    test('a blog can be created', async ( {page} ) => {
+      await createBlog(page, 'test title', 'test author', 'test url')
+
+      const blogDiv = page.locator('.blog').filter({ hasText: 'test title'})
+
+      await expect(blogDiv).toContainText('test title')
+      await expect(blogDiv).toContainText('test author')
+      await expect(blogDiv).toContainText('test url')
     })
   })
 })
