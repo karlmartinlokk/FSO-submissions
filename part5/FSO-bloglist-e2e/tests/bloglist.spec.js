@@ -78,7 +78,7 @@ describe('Blog app', () => {
       await createBlog(page, 'test title', 'test author', 'test url')
       const createdBlog = page.locator('.blog').filter({ hasText: 'test title'})
 
-      page.on('dialog', async dialog => await dialog.accept())
+      page.on('dialog', dialog => dialog.accept())
       const blogField = createdBlog.locator('..')
       await blogField.getByRole('button', { name: 'remove'}).click()
 
@@ -112,6 +112,56 @@ describe('Blog app', () => {
       await expect(page.getByText('Logged in as Superuser')).toBeVisible()
       await expect(page.locator('.blog').filter({ hasText: 'test title'})).toBeVisible()
       await expect(deleteButton).not.toBeVisible()
+    })
+
+    test('blogs are arranged in order of most likes', async ({ page }) => {
+      await createBlog(page, 'test title', 'test author', 'test url')
+      await createBlog(page, 'test title 2', 'test author 2', 'test url 2')
+      await createBlog(page, 'test title 3', 'test author 3', 'test url 3')
+
+      const blog1 = page.locator('.blog').filter({ has: page.locator('text="test title"')})
+      const blog2 = page.locator('.blog').filter({ has: page.locator('text="test title 2"')})
+      const blog3 = page.locator('.blog').filter({ has: page.locator('text="test title 3"')})
+
+
+      await expect(blog1).toBeVisible()
+      await expect(blog2).toBeVisible()
+      await expect(blog3).toBeVisible()
+
+      const firstBlog = page.locator('.allBlogs').locator('.blog').nth(0)
+      await expect(firstBlog).toBeVisible()
+      const secondBlog = page.locator('.allBlogs').locator('.blog').nth(1)
+      await expect(secondBlog).toBeVisible()
+      const thirdBlog = page.locator('.allBlogs').locator('.blog').nth(2)
+      await expect(thirdBlog).toBeVisible()
+
+
+      await blog1.getByRole('button', { name: 'view'}).click()
+      await blog1.getByRole('button', { name: 'like' }).click()
+      await blog1.getByRole('button', { name: 'hide'}).click()
+      await expect(blog1.locator('.likeCount')).toHaveText('1')
+
+      
+      for (let i = 1; i < 5; i++) {
+        await blog3.getByRole('button', { name: 'view'}).click()
+        await blog3.getByRole('button', { name: 'like' }).click()
+        await expect(blog3.locator('.likeCount')).toHaveText(`${i}`)
+        await blog3.getByRole('button', { name: 'hide'}).click()
+      }
+
+      await expect(firstBlog.locator('.likeCount')).toHaveText('4')
+      await expect(secondBlog.locator('.likeCount')).toHaveText('1')
+
+      for (let i = 1; i < 8; i++) {
+        await blog2.getByRole('button', { name: 'view'}).click()
+        await blog2.getByRole('button', { name: 'like' }).click()
+        await expect(blog2.locator('.likeCount')).toHaveText(`${i}`)
+        await blog2.getByRole('button', { name: 'hide'}).click()
+      }
+
+      await expect(firstBlog.locator('.likeCount')).toHaveText('7')
+      await expect(secondBlog.locator('.likeCount')).toHaveText('4')
+      await expect(thirdBlog.locator('.likeCount')).toHaveText('1')
     })
   })
 })

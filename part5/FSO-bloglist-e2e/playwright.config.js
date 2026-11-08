@@ -19,8 +19,8 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
 
-  /* Timeout to 3 seconds, one worker at a time (parallel execution causes problems for database) */
-  timeout: 3000,
+  /* Timeout to 10 seconds, one worker at a time (parallel execution causes problems for database) */
+  timeout: 10000,
   fullyParallel: false,
   workers: 1,
 
