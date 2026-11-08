@@ -90,7 +90,28 @@ describe('Blog app', () => {
       await page.goto('/')
       await expect(page.getByText('Logged in as Superuser')).toBeVisible() // safeguard to check whether user stayed logged in
       await expect(createdBlog).not.toBeVisible() //checking whether blog is gone even after backend fetches again
+    })
 
+    test('the blog delete button can only seen by author', async ({ page, request }) => {
+      await createBlog(page, 'test title', 'test author', 'test url')
+      const deleteButton = page.locator('.blog').filter({ hasText: 'test title'}).locator('..').getByRole('button', { name: 'remove'})
+
+      await expect(deleteButton).toBeVisible()
+
+      await page.getByRole('button', { name: 'Logout'}).click()
+      await expect(page.getByRole('button', { name: 'login'})).toBeVisible()
+
+      await request.post('/api/users', {
+        data: {
+          name: 'Superuser2',
+          username: 'root2',
+          password: 'salainen2'
+        }
+      })
+      await loginWith(page, 'root2', 'salainen2')
+      await expect(page.getByText('Logged in as Superuser')).toBeVisible()
+      await expect(page.locator('.blog').filter({ hasText: 'test title'})).toBeVisible()
+      await expect(deleteButton).not.toBeVisible()
     })
   })
 })
