@@ -73,5 +73,24 @@ describe('Blog app', () => {
 
       await expect(blogDiv.locator('.likeCount')).toHaveText('1')
     })
+
+    test('a blog can be deleted by its author', async ({ page }) => {
+      await createBlog(page, 'test title', 'test author', 'test url')
+      const createdBlog = page.locator('.blog').filter({ hasText: 'test title'})
+
+      page.on('dialog', async dialog => await dialog.accept())
+      const blogField = createdBlog.locator('..')
+      await blogField.getByRole('button', { name: 'remove'}).click()
+
+      await expect(createdBlog).not.toBeVisible()
+
+      const notifDiv = page.locator('.notification')
+      await expect(notifDiv).toContainText('Blog deleted successfully')
+
+      await page.goto('/')
+      await expect(page.getByText('Logged in as Superuser')).toBeVisible() // safeguard to check whether user stayed logged in
+      await expect(createdBlog).not.toBeVisible() //checking whether blog is gone even after backend fetches again
+
+    })
   })
 })
